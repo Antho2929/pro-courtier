@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Courtier Pro — Tableau de Bord</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #151820;
+  --surface2: #1c2030;
+  --surface3: #232840;
+  --border: #2a3050;
+  --accent: #c9a84c;
+  --accent2: #e8c96a;
+  --accent-dim: rgba(201,168,76,0.12);
+  --text: #e8eaf0;
+  --text2: #9ba3bf;
+  --text3: #5c6480;
+  --green: #4caf82;
+  --red: #e05c5c;
+  --blue: #5c8fe0;
+  --purple: #9b7fe0;
+  --orange: #e0905c;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-accent: 0 4px 24px rgba(201,168,76,0.2);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: 220px;
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  padding: 28px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo h1 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+.sidebar-logo p {
+  font-size: 0.72rem;
+  color: var(--text3);
+  margin-top: 2px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+nav { flex: 1; padding: 16px 12px; }
+.nav-section { margin-bottom: 24px; }
+.nav-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text2);
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 0.18s;
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: rgba(201,168,76,0.25);
+}
+.nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 20px;
+}
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.user-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  border: 2px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+.user-info p { font-size: 0.82rem; font-weight: 600; }
+.user-info span { font-size: 0.7rem; color: var(--text3); }
+
+/* ── MAIN ── */
+#main {
+  margin-left: 220px;
+  flex: 1;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.page { display: none; padding: 32px 36px; min-height: 100vh; }
+.page.active { display: block; }
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+.page-title h2 {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.page-title p { color: var(--text3); font-size: 0.88rem; margin-top: 4px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.18s;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+}
+.btn-primary:hover {
+  background: var(--accent2);
+  box-shadow: var(--shadow-accent);
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover { background: var(--surface2); color: var(--text); }
+.btn-danger {
+  background: rgba(224,92,92,0.15);
+  color: var(--red);
+  border: 1px solid rgba(224,92,92,0.3);
+}
+.btn-sm { padding: 7px 13px; font-size: 0.8rem; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+
+/* ── STAT CARDS ── */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.stat-card.gold::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+.stat-card.green::before { background: linear-gradient(90deg, var(--green), #70d4a8); }
+.stat-card.blue::before { background: linear-gradient(90deg, var(--blue), #7ab0f0); }
+.stat-card.purple::before { background: linear-gradient(90deg, var(--purple), #b49cf0); }
+
+.stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 10px; }
+.stat-value { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; margin-bottom: 4px; }
+.stat-sub { font-size: 0.78rem; color: var(--text3); }
+.stat-icon { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; opacity: 0.3; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.badge-green { background: rgba(76,175,130,0.15); color: var(--green); }
+.badge-red { background: rgba(224,92,92,0.15); color: var(--red); }
+.badge-blue { background: rgba(92,143,224,0.15); color: var(--blue); }
+.badge-gold { background: var(--accent-dim); color: var(--accent); }
+.badge-purple { background: rgba(155,127,224,0.15); color: var(--purple); }
+.badge-orange { background: rgba(224,144,92,0.15); color: var(--orange); }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
+td {
+  padding: 13px 14px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(42,48,80,0.5);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  width: 560px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+}
+.modal h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+/* ── FORMS ── */
+.form-group { margin-bottom: 16px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+input, select, textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  transition: border-color 0.18s;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+}
+textarea { resize: vertical; min-height: 80px; }
+select option { background: var(--surface2); }
+
+/* ── PROGRESS BAR ── */
+.progress-bar {
+  height: 6px;
+  background: var(--surface3);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.3s;
+}
+
+/* ── TIMELINE ── */
+.timeline { position: relative; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 10px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.tl-item {
+  display: flex;
+  gap: 16px;
+  padding: 0 0 16px 0;
+  position: relative;
+}
+.tl-dot {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--bg);
+  flex-shrink: 0;
+  margin-top: 2px;
+  z-index: 1;
+  position: relative;
+}
+.tl-dot.done { background: var(--accent); }
+.tl-content { flex: 1; }
+.tl-title { font-size: 0.88rem; font-weight: 600; }
+.tl-date { font-size: 0.75rem; color: var(--text3); margin-top: 2px; }
+
+/* ── CALENDAR ── */
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.cal-nav-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.cal-nav-btn:hover { background: var(--surface3); }
+.cal-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+.cal-day-name {
+  text-align: center;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  padding: 6px;
+  font-weight: 600;
+}
+.cal-day {
+  min-height: 80px;
+  background: var(--surface2);
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+  border: 1px solid transparent;
+}
+.cal-day:hover { background: var(--surface3); border-color: var(--border); }
+.cal-day.other-month { opacity: 0.35; }
+.cal-day.today {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+.cal-day.has-events::after {
+  content: '';
+  position: absolute;
+  bottom: 5px; right: 5px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.cal-day-num {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.cal-event {
+  font-size: 0.65rem;
+  padding: 2px 4px;
+  border-radius: 3px;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+.cal-event.rdv { background: rgba(92,143,224,0.25); color: var(--blue); }
+.cal-event.echeance { background: rgba(224,92,92,0.25); color: var(--red); }
+.cal-event.tache { background: rgba(76,175,130,0.2); color: var(--green); }
+.cal-event.notaire { background: var(--accent-dim); color: var(--accent); }
+
+/* ── UPCOMING EVENTS ── */
+.event-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.event-item:last-child { border-bottom: none; }
+.event-date-box {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 6px 10px;
+  text-align: center;
+  min-width: 46px;
+  flex-shrink: 0;
+}
+.event-date-box .day { font-size: 1.2rem; font-weight: 700; line-height: 1; }
+.event-date-box .month { font-size: 0.62rem; text-transform: uppercase; color: var(--text3); }
+.event-info { flex: 1; }
+.event-title { font-size: 0.88rem; font-weight: 600; margin-bottom: 2px; }
+.event-meta { font-size: 0.75rem; color: var(--text3); }
+.event-actions { display: flex; gap: 6px; }
+
+/* ── CRM ── */
+.contact-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: border-color 0.18s;
+  cursor: pointer;
+}
+.contact-card:hover { border-color: var(--accent); }
+.contact-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.contact-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 3px; }
+.contact-meta { font-size: 0.78rem; color: var(--text2); margin-bottom: 6px; }
+.contact-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+
+/* ── SEARCH BAR ── */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  flex: 1;
+  max-width: 340px;
+}
+.search-bar input {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 0.88rem;
+  flex: 1;
+}
+.search-bar input:focus { box-shadow: none; }
+.search-icon { color: var(--text3); font-size: 0.95rem; }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--surface2); padding: 4px; border-radius: 10px; width: fit-content; }
+.tab-btn {
+  padding: 8px 18px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.tab-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 6px rgba(0,0,0,0.3); }
+
+/* ── TRANSACTION STAGES ── */
+.stage-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 24px;
+}
+.stage {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+.stage::after {
+  content: '';
+  position: absolute;
+  top: 13px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+}
+.stage:last-child::after { display: none; }
+.stage-dot {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  margin: 0 auto 6px;
+  position: relative;
+  z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  transition: all 0.2s;
+}
+.stage.done .stage-dot { background: var(--accent); border-color: var(--accent); color: #000; }
+.stage.current .stage-dot { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-dim); }
+.stage-label { font-size: 0.68rem; color: var(--text3); }
+.stage.done .stage-label, .stage.current .stage-label { color: var(--text2); }
+
+/* ── DASHBOARD QUICK ACTIONS ── */
+.quick-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--text2);
+  transition: all 0.18s;
+}
+.quick-action:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+/* ── COMMISSION CALC ── */
+.calc-result {
+  background: linear-gradient(135deg, var(--accent-dim), rgba(201,168,76,0.05));
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  text-align: center;
+  margin-top: 16px;
+}
+.calc-result .big-num {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+.calc-result .sub { font-size: 0.8rem; color: var(--text3); margin-top: 4px; }
+
+/* ── PDF ANALYZER ── */
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 48px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.upload-zone:hover { border-color: var(--accent); background: var(--accent-dim); }
+.upload-zone .upload-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.upload-zone h4 { font-size: 1rem; margin-bottom: 6px; }
+.upload-zone p { font-size: 0.83rem; color: var(--text3); }
+
+.ai-result {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-top: 16px;
+}
+.ai-typing { display: flex; gap: 5px; align-items: center; }
+.ai-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: aiDot 1.2s infinite;
+}
+.ai-dot:nth-child(2) { animation-delay: 0.2s; }
+.ai-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes aiDot { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow);
+  z-index: 9999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s;
+}
+#toast.show { transform: translateY(0); opacity: 1; }
+#toast.success { border-color: var(--green); }
+#toast.error { border-color: var(--red); }
+
+/* ── SCROLL ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── RESPONSIVE DETAIL VIEW ── */
+.detail-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: none;
+}
+.detail-panel.open { display: block; }
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.info-item label { margin-bottom: 4px; }
+.info-item p { font-size: 0.9rem; font-weight: 500; }
+
+/* Action icon buttons */
+.icon-btn {
+  width: 30px; height: 30px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: all 0.18s;
+}
+.icon-btn:hover { background: var(--surface3); color: var(--text); }
+.icon-btn.danger:hover { background: rgba(224,92,92,0.15); color: var(--red); border-color: rgba(224,92,92,0.3); }
+
+/* Range input */
+input[type=range] {
+  padding: 0;
+  border: none;
+  height: 4px;
+  accent-color: var(--accent);
+  background: var(--border);
+  border-radius: 2px;
+}
+input[type=range]:focus { box-shadow: none; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sidebar-logo">
+    <h1>Courtier Pro</h1>
+    <p>Tableau de bord</p>
+  </div>
+  <nav>
+    <div class="nav-section">
+      <div class="nav-label">Principal</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <span class="icon">🏠</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('transactions')">
+        <span class="icon">📁</span> Transactions
+        <span class="nav-badge" id="tx-badge">0</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Planification</div>
+      <div class="nav-item" onclick="showPage('calendar')">
+        <span class="icon">📅</span> Calendrier
+      </div>
+      <div class="nav-item" onclick="showPage('crm')">
+        <span class="icon">👥</span> CRM & Contacts
+        <span class="nav-badge" id="crm-badge">0</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Outils</div>
+      <div class="nav-item" onclick="showPage('analyzer')">
+        <span class="icon">🤖</span> Analyseur IA
+      </div>
+      <div class="nav-item" onclick="showPage('calculator')">
+        <span class="icon">💰</span> Calculateur
+      </div>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar" id="user-avatar-initials">MB</div>
+      <div class="user-info">
+        <p id="user-display-name">Martin Bélanger</p>
+        <span>Courtier immobilier</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+
+<!-- ════ DASHBOARD ════ -->
+<div id="page-dashboard" class="page active">
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Bonjour, <span id="dash-name">Martin</span> 👋</h2>
+      <p id="dash-date">Chargement de la date...</p>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline" onclick="showPage('analyzer')">🤖 Analyser un PDF</button>
+      <button class="btn btn-primary" onclick="openModal('modal-add-transaction')">+ Nouvelle transaction</button>
+    </div>
+  </div>
+
+  <div class="grid-4" style="margin-bottom:24px;" id="dash-stats"></div>
+
+  <div class="quick-actions" id="quick-actions">
+    <div class="quick-action" onclick="openModal('modal-add-event')">📅 Ajouter un RDV</div>
+    <div class="quick-action" onclick="openModal('modal-add-contact')">👤 Nouveau contact</div>
+    <div class="quick-action" onclick="openModal('modal-add-transaction')">📁 Nouvelle transaction</div>
+    <div class="quick-action" onclick="showPage('calculator')">💰 Calculer commission</div>
+    <div class="quick-action" onclick="showPage('analyzer')">🤖 Analyser formulaire</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+        <h3 style="font-family:var(--font-display);font-size:1.05rem;">Transactions actives</h3>
+        <button class="btn btn-outline btn-sm" onclick="showPage('transactions')">Voir tout</button>
+      </div>
+      <div id="dash-transactions"></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+        <h3 style="font-family:var(--font-display);font-size:1.05rem;">Prochains événements</h3>
+        <button class="btn btn-outline btn-sm" onclick="showPage('calendar')">Calendrier</button>
+      </div>
+      <div id="dash-events"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TRANSACTIONS ════ -->
+<div id="page-transactions" class="page">
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Transactions</h2>
+      <p>Suivi complet de vos dossiers</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('modal-add-transaction')">+ Nouveau dossier</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="filterTx('all',this)">Tous</button>
+    <button class="tab-btn" onclick="filterTx('actif',this)">Actifs</button>
+    <button class="tab-btn" onclick="filterTx('conditionnel',this)">Conditionnels</button>
+    <button class="tab-btn" onclick="filterTx('ferme',this)">Fermes</button>
+    <button class="tab-btn" onclick="filterTx('complété',this)">Complétés</button>
+  </div>
+
+  <div class="card" style="padding:0;">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Adresse</th>
+            <th>Type</th>
+            <th>Prix</th>
+            <th>Statut</th>
+            <th>Notaire</th>
+            <th>Commission</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tx-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="tx-detail" class="detail-panel" style="margin-top:20px;"></div>
+</div>
+
+<!-- ════ CALENDRIER ════ -->
+<div id="page-calendar" class="page">
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Calendrier</h2>
+      <p>Rendez-vous, tâches et échéances</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('modal-add-event')">+ Ajouter événement</button>
+  </div>
+
+  <div class="grid-2" style="align-items:start;gap:24px;">
+    <div class="card">
+      <div class="cal-header">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+        <div class="cal-title" id="cal-month-label"></div>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="font-family:var(--font-display);font-size:1rem;margin-bottom:14px;">Légende</h3>
+        <div style="display:flex;flex-direction:column;gap:7px;font-size:0.82rem;">
+          <div style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:3px;background:rgba(92,143,224,0.4);display:inline-block;"></span> Rendez-vous client</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:3px;background:rgba(224,92,92,0.4);display:inline-block;"></span> Échéance importante</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:3px;background:rgba(76,175,130,0.3);display:inline-block;"></span> Tâche à compléter</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--accent-dim);display:inline-block;"></span> Acte notarié</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-family:var(--font-display);font-size:1rem;margin-bottom:14px;">Événements à venir</h3>
+        <div id="upcoming-events"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CRM / CONTACTS ════ -->
+<div id="page-crm" class="page">
+  <div class="page-header">
+    <div class="page-title">
+      <h2>CRM & Contacts</h2>
+      <p>Clients, prospects et leads</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('modal-add-contact')">+ Nouveau contact</button>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap;">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Rechercher un contact..." id="crm-search" oninput="filterContacts()">
+    </div>
+    <div class="tabs" style="margin-bottom:0;">
+      <button class="tab-btn active" onclick="filterContactType('tous',this)">Tous</button>
+      <button class="tab-btn" onclick="filterContactType('client',this)">Clients</button>
+      <button class="tab-btn" onclick="filterContactType('prospect',this)">Prospects</button>
+      <button class="tab-btn" onclick="filterContactType('lead',this)">Leads</button>
+      <button class="tab-btn" onclick="filterContactType('ancien',this)">Anciens clients</button>
+    </div>
+  </div>
+
+  <div class="contacts-grid" id="contacts-grid"></div>
+</div>
+
+<!-- ════ ANALYSEUR IA ════ -->
+<div id="page-analyzer" class="page">
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Analyseur IA de formulaires</h2>
+      <p>Téléversez vos formulaires OACIQ pour un résumé instantané</p>
+    </div>
+  </div>
+
+  <div class="grid-2" style="align-items:start;">
+    <div>
+      <div class="upload-zone" onclick="document.getElementById('pdf-input').click()" id="upload-zone">
+        <div class="upload-icon">📄</div>
+        <h4>Déposer votre formulaire PDF ici</h4>
+        <p>PA, CP, MO, AG — formulaires OACIQ acceptés</p>
+        <p style="margin-top:8px;color:var(--accent);font-size:0.8rem;">Cliquer pour sélectionner</p>
+        <input type="file" id="pdf-input" accept=".pdf" style="display:none" onchange="handlePdfUpload(event)">
+      </div>
+
+      <div id="pdf-info" style="display:none;margin-top:14px;" class="card">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:2rem;">📋</span>
+          <div style="flex:1;">
+            <p style="font-weight:600;" id="pdf-filename"></p>
+            <p style="font-size:0.78rem;color:var(--text3);" id="pdf-size"></p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="analyzePdf()">Analyser</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div id="ai-output" style="display:none;">
+        <div class="card" id="ai-result-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+            <span style="font-size:1.2rem;">🤖</span>
+            <h4 style="font-family:var(--font-display);font-size:1rem;">Analyse IA</h4>
+            <div class="ai-typing" id="ai-typing" style="display:none;">
+              <div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div>
+            </div>
+          </div>
+          <div id="ai-result-content" style="font-size:0.88rem;line-height:1.7;color:var(--text2);"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px;" id="analyzer-tips">
+        <h4 style="font-family:var(--font-display);font-size:1rem;margin-bottom:12px;">Types de formulaires reconnus</h4>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:0.83rem;color:var(--text2);">
+          <div>📄 <strong>PA</strong> — Promesse d'achat</div>
+          <div>📄 <strong>CP</strong> — Contre-proposition</div>
+          <div>📄 <strong>MO</strong> — Modification de promesse</div>
+          <div>📄 <strong>AG</strong> — Annexe générale</div>
+          <div>📄 <strong>CC</strong> — Contrat de courtage</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CALCULATEUR ════ -->
+<div id="page-calculator" class="page">
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Calculateur de commissions</h2>
+      <p>Estimez vos revenus et votre rentabilité</p>
+    </div>
+  </div>
+
+  <div class="grid-2" style="align-items:start;">
+    <div class="card">
+      <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:20px;">Paramètres</h3>
+
+      <div class="form-group">
+        <label>Prix de vente</label>
+        <input type="number" id="calc-price" value="550000" min="0" step="5000" oninput="calcCommission()">
+      </div>
+      <div class="form-group">
+        <label>Taux de commission total (%)</label>
+        <input type="range" id="calc-rate" min="1" max="8" step="0.25" value="5" oninput="calcCommission(); document.getElementById('calc-rate-disp').textContent=this.value+'%'">
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text3);margin-top:4px;"><span>1%</span><span id="calc-rate-disp">5%</span><span>8%</span></div>
+      </div>
+      <div class="form-group">
+        <label>Part du courtier (%)</label>
+        <input type="range" id="calc-split" min="30" max="100" step="5" value="70" oninput="calcCommission(); document.getElementById('calc-split-disp').textContent=this.value+'%'">
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text3);margin-top:4px;"><span>30%</span><span id="calc-split-disp">70%</span><span>100%</span></div>
+      </div>
+      <div class="form-group">
+        <label>Partage avec l'autre courtier</label>
+        <select id="calc-coop" onchange="calcCommission()">
+          <option value="0">Pas de partage (double représentation)</option>
+          <option value="50" selected>50/50 (standard)</option>
+          <option value="40">40% (vendeur)</option>
+          <option value="60">60% (acheteur)</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Dépenses marketing ($)</label>
+          <input type="number" id="calc-marketing" value="800" min="0" step="100" oninput="calcCommission()">
+        </div>
+        <div class="form-group">
+          <label>Autres dépenses ($)</label>
+          <input type="number" id="calc-expenses" value="200" min="0" step="50" oninput="calcCommission()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>TPS/TVQ sur commission</label>
+        <select id="calc-tax" onchange="calcCommission()">
+          <option value="0">Pas de taxes</option>
+          <option value="0.14975" selected>TPS + TVQ (14.975%)</option>
+          <option value="0.05">TPS seulement (5%)</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <div id="calc-result-area"></div>
+
+      <div class="card" style="margin-top:16px;">
+        <h3 style="font-family:var(--font-display);font-size:1rem;margin-bottom:16px;">Projection annuelle</h3>
+        <div class="form-group">
+          <label>Nombre de transactions / année</label>
+          <input type="number" id="calc-yearly" value="15" min="1" max="100" oninput="calcCommission()">
+        </div>
+        <div id="yearly-projection"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ════ MODALS ════ -->
+
+<!-- Modal: Ajouter transaction -->
+<div class="modal-overlay" id="modal-add-transaction">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h3>📁 Nouveau dossier</h3>
+      <button class="icon-btn" onclick="closeModal('modal-add-transaction')">✕</button>
+    </div>
+    <div class="form-group"><label>Adresse de la propriété</label><input type="text" id="tx-address" placeholder="ex: 123 Rue des Érables, Laval"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Type</label>
+        <select id="tx-type">
+          <option>Résidentiel</option><option>Condo</option><option>Plex</option><option>Commercial</option><option>Terrain</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Rôle</label>
+        <select id="tx-role">
+          <option>Vendeur</option><option>Acheteur</option><option>Double représentation</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Prix ($)</label><input type="number" id="tx-price" placeholder="550000"></div>
+      <div class="form-group"><label>Commission (%)</label><input type="number" id="tx-comm" placeholder="5" step="0.25"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Statut</label>
+        <select id="tx-status">
+          <option value="actif">Actif</option>
+          <option value="conditionnel">Conditionnel</option>
+          <option value="ferme">Ferme</option>
+          <option value="complété">Complété</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Date notaire</label><input type="date" id="tx-notaire"></div>
+    </div>
+    <div class="form-group"><label>Client(s)</label><input type="text" id="tx-clients" placeholder="Nom du client ou des clients"></div>
+    <div class="form-group"><label>Notes</label><textarea id="tx-notes" placeholder="Notes, conditions spéciales..."></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-transaction')">Annuler</button>
+      <button class="btn btn-primary" onclick="addTransaction()">Créer le dossier</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Ajouter événement -->
+<div class="modal-overlay" id="modal-add-event">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h3>📅 Ajouter un événement</h3>
+      <button class="icon-btn" onclick="closeModal('modal-add-event')">✕</button>
+    </div>
+    <div class="form-group"><label>Titre</label><input type="text" id="ev-title" placeholder="ex: Visite - 123 Rue des Érables"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Type</label>
+        <select id="ev-type">
+          <option value="rdv">Rendez-vous client</option>
+          <option value="echeance">Échéance</option>
+          <option value="tache">Tâche</option>
+          <option value="notaire">Acte notarié</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Date</label><input type="date" id="ev-date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Heure</label><input type="time" id="ev-time"></div>
+      <div class="form-group"><label>Durée (minutes)</label><input type="number" id="ev-duration" value="60" min="15" step="15"></div>
+    </div>
+    <div class="form-group"><label>Lié à une transaction</label>
+      <select id="ev-transaction"><option value="">— Aucune —</option></select>
+    </div>
+    <div class="form-group"><label>Notes / Adresse</label><textarea id="ev-notes" placeholder="Adresse, lien Zoom, notes..."></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-event')">Annuler</button>
+      <button class="btn btn-primary" onclick="addEvent()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Ajouter contact -->
+<div class="modal-overlay" id="modal-add-contact">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h3>👤 Nouveau contact</h3>
+      <button class="icon-btn" onclick="closeModal('modal-add-contact')">✕</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Prénom</label><input type="text" id="ct-first" placeholder="Prénom"></div>
+      <div class="form-group"><label>Nom</label><input type="text" id="ct-last" placeholder="Nom de famille"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Catégorie</label>
+        <select id="ct-type">
+          <option value="client">Client actif</option>
+          <option value="ancien">Ancien client</option>
+          <option value="prospect">Prospect</option>
+          <option value="lead">Lead</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Téléphone</label><input type="tel" id="ct-phone" placeholder="514-xxx-xxxx"></div>
+    </div>
+    <div class="form-group"><label>Courriel</label><input type="email" id="ct-email" placeholder="courriel@exemple.com"></div>
+    <div class="form-group"><label>Adresse</label><input type="text" id="ct-address" placeholder="Adresse complète"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Source</label>
+        <select id="ct-source">
+          <option>Référence</option><option>Kijiji / DuProprio</option><option>Centris</option><option>Réseaux sociaux</option><option>Publicité</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Intérêt</label>
+        <select id="ct-interest">
+          <option>Acheter</option><option>Vendre</option><option>Acheter & Vendre</option><option>Investir</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Budget min ($)</label><input type="number" id="ct-budget-min" placeholder="300000"></div>
+      <div class="form-group"><label>Budget max ($)</label><input type="number" id="ct-budget-max" placeholder="600000"></div>
+    </div>
+    <div class="form-group"><label>Notes</label><textarea id="ct-notes" placeholder="Préférences, besoins spécifiques, historique..."></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-contact')">Annuler</button>
+      <button class="btn btn-primary" onclick="addContact()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Voir événements du jour -->
+<div class="modal-overlay" id="modal-day-events">
+  <div class="modal" style="width:460px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 id="day-modal-title">Événements</h3>
+      <button class="icon-btn" onclick="closeModal('modal-day-events')">✕</button>
+    </div>
+    <div id="day-events-list"></div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-primary" style="width:100%;" onclick="closeModal('modal-day-events');openModal('modal-add-event')">+ Ajouter un événement</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════
+// DATA STORE
+// ════════════════════════════════════════════
+let transactions = JSON.parse(localStorage.getItem('cp_transactions') || '[]');
+let events = JSON.parse(localStorage.getItem('cp_events') || '[]');
+let contacts = JSON.parse(localStorage.getItem('cp_contacts') || '[]');
+
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let currentTxFilter = 'all';
+let currentContactType = 'tous';
+let pdfFile = null;
+let pdfBase64 = null;
+
+function save() {
+  localStorage.setItem('cp_transactions', JSON.stringify(transactions));
+  localStorage.setItem('cp_events', JSON.stringify(events));
+  localStorage.setItem('cp_contacts', JSON.stringify(contacts));
+}
+
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2,5);
+}
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(id)) n.classList.add('active');
+  });
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'transactions') renderTransactions();
+  if (id === 'calendar') renderCalendar();
+  if (id === 'crm') renderContacts();
+  if (id === 'calculator') calcCommission();
+}
+
+// ════════════════════════════════════════════
+// MODALS
+// ════════════════════════════════════════════
+function openModal(id) {
+  if (id === 'modal-add-event') populateTransactionSelect();
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = (type === 'success' ? '✅ ' : '❌ ') + msg;
+  t.className = 'show ' + type;
+  setTimeout(() => t.className = '', 3000);
+}
+
+// ════════════════════════════════════════════
+// TRANSACTIONS
+// ════════════════════════════════════════════
+function addTransaction() {
+  const address = document.getElementById('tx-address').value.trim();
+  if (!address) { toast('Veuillez entrer une adresse', 'error'); return; }
+  const tx = {
+    id: generateId(),
+    address,
+    type: document.getElementById('tx-type').value,
+    role: document.getElementById('tx-role').value,
+    price: parseFloat(document.getElementById('tx-price').value) || 0,
+    commission: parseFloat(document.getElementById('tx-comm').value) || 5,
+    status: document.getElementById('tx-status').value,
+    notaire: document.getElementById('tx-notaire').value,
+    clients: document.getElementById('tx-clients').value,
+    notes: document.getElementById('tx-notes').value,
+    created: new Date().toISOString()
+  };
+  transactions.unshift(tx);
+  save();
+  closeModal('modal-add-transaction');
+  clearForm(['tx-address','tx-price','tx-comm','tx-clients','tx-notes','tx-notaire']);
+  renderDashboard();
+  renderTransactions();
+  updateBadges();
+  toast('Transaction ajoutée !');
+}
+
+function deleteTransaction(id) {
+  if (!confirm('Supprimer ce dossier ?')) return;
+  transactions = transactions.filter(t => t.id !== id);
+  save(); renderTransactions(); renderDashboard(); updateBadges(); toast('Dossier supprimé');
+}
+
+function filterTx(status, btn) {
+  currentTxFilter = status;
+  document.querySelectorAll('#page-transactions .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTransactions();
+}
+
+function renderTransactions() {
+  const body = document.getElementById('tx-table-body');
+  const filtered = currentTxFilter === 'all' ? transactions : transactions.filter(t => t.status === currentTxFilter);
+  if (!filtered.length) {
+    body.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3);">Aucune transaction trouvée</td></tr>`;
+    return;
+  }
+  const statusMap = {actif:'badge-blue',conditionnel:'badge-orange',ferme:'badge-gold',complété:'badge-green'};
+  const statusLabel = {actif:'Actif',conditionnel:'Conditionnel',ferme:'Ferme',complété:'Complété'};
+  body.innerHTML = filtered.map(tx => {
+    const comm = tx.price * (tx.commission / 100) * 0.5;
+    return `<tr>
+      <td>
+        <div style="font-weight:600;">${tx.address}</div>
+        <div style="font-size:0.75rem;color:var(--text3);">${tx.clients || '—'}</div>
+      </td>
+      <td><span class="badge badge-purple">${tx.type}</span></td>
+      <td style="font-weight:600;">${tx.price ? '$' + tx.price.toLocaleString('fr-CA') : '—'}</td>
+      <td><span class="badge ${statusMap[tx.status]||'badge-blue'}">${statusLabel[tx.status]||tx.status}</span></td>
+      <td style="color:var(--text2);">${tx.notaire ? formatDate(tx.notaire) : '—'}</td>
+      <td style="color:var(--accent);font-weight:600;">${tx.price ? '$' + Math.round(comm * 0.70).toLocaleString('fr-CA') : '—'}</td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <button class="icon-btn" onclick="showTxDetail('${tx.id}')" title="Détails">👁</button>
+          <button class="icon-btn danger" onclick="deleteTransaction('${tx.id}')" title="Supprimer">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function showTxDetail(id) {
+  const tx = transactions.find(t => t.id === id);
+  if (!tx) return;
+  const panel = document.getElementById('tx-detail');
+  const stages = ['Contrat signé','Inspection','Financement','Conditions levées','Acte notarié'];
+  const stageIndex = {actif:0,conditionnel:2,ferme:3,complété:4}[tx.status] || 0;
+  const comm_brut = tx.price * (tx.commission/100) * 0.5;
+  const comm_net = comm_brut * 0.70;
+  panel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div>
+        <h3 style="font-family:var(--font-display);font-size:1.1rem;">${tx.address}</h3>
+        <p style="color:var(--text3);font-size:0.83rem;margin-top:2px;">${tx.type} · ${tx.role}</p>
+      </div>
+      <button class="icon-btn" onclick="document.getElementById('tx-detail').classList.remove('open')">✕</button>
+    </div>
+    <div class="stage-bar">${stages.map((s,i)=>`<div class="stage ${i<stageIndex?'done':i===stageIndex?'current':''}"><div class="stage-dot">${i<stageIndex?'✓':i+1}</div><div class="stage-label">${s}</div></div>`).join('')}</div>
+    <div class="info-grid">
+      <div class="info-item"><label>Prix de vente</label><p style="color:var(--accent);">${tx.price?'$'+tx.price.toLocaleString('fr-CA'):'—'}</p></div>
+      <div class="info-item"><label>Commission brute</label><p>${tx.price?'$'+Math.round(comm_brut).toLocaleString('fr-CA'):'—'}</p></div>
+      <div class="info-item"><label>Votre part (70%)</label><p style="color:var(--green);">${tx.price?'$'+Math.round(comm_net).toLocaleString('fr-CA'):'—'}</p></div>
+      <div class="info-item"><label>Date notaire</label><p>${tx.notaire?formatDate(tx.notaire):'—'}</p></div>
+      <div class="info-item"><label>Clients</label><p>${tx.clients||'—'}</p></div>
+    </div>
+    ${tx.notes?`<div style="background:var(--surface2);border-radius:8px;padding:12px 14px;font-size:0.85rem;color:var(--text2);">${tx.notes}</div>`:''}
+  `;
+  panel.classList.add('open');
+}
+
+// ════════════════════════════════════════════
+// EVENTS / CALENDAR
+// ════════════════════════════════════════════
+function populateTransactionSelect() {
+  const sel = document.getElementById('ev-transaction');
+  sel.innerHTML = '<option value="">— Aucune —</option>' +
+    transactions.map(t => `<option value="${t.id}">${t.address}</option>`).join('');
+}
+
+function addEvent() {
+  const title = document.getElementById('ev-title').value.trim();
+  if (!title) { toast('Veuillez entrer un titre', 'error'); return; }
+  const ev = {
+    id: generateId(),
+    title,
+    type: document.getElementById('ev-type').value,
+    date: document.getElementById('ev-date').value,
+    time: document.getElementById('ev-time').value,
+    duration: parseInt(document.getElementById('ev-duration').value) || 60,
+    transaction: document.getElementById('ev-transaction').value,
+    notes: document.getElementById('ev-notes').value,
+    created: new Date().toISOString()
+  };
+  if (!ev.date) { toast('Veuillez entrer une date', 'error'); return; }
+  events.push(ev);
+  save();
+  closeModal('modal-add-event');
+  clearForm(['ev-title','ev-date','ev-time','ev-notes']);
+  renderCalendar();
+  renderDashboard();
+  toast('Événement ajouté !');
+}
+
+function deleteEvent(id) {
+  events = events.filter(e => e.id !== id);
+  save(); renderCalendar(); renderDashboard(); toast('Événement supprimé');
+  closeModal('modal-day-events');
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  document.getElementById('cal-month-label').textContent = months[calMonth] + ' ' + calYear;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const offset = firstDay === 0 ? 6 : firstDay - 1;
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+  const today = new Date();
+
+  const dayNames = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  let html = dayNames.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+
+  for (let i = 0; i < offset; i++) {
+    const d = daysInPrev - offset + 1 + i;
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayEvents = events.filter(e => e.date === dateStr);
+    const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+    html += `<div class="cal-day${isToday?' today':''}${dayEvents.length?' has-events':''}" onclick="showDayEvents('${dateStr}')">
+      <div class="cal-day-num" style="${isToday?'color:var(--accent);':''}">${d}</div>
+      ${dayEvents.slice(0,3).map(e => `<div class="cal-event ${e.type}" title="${e.title}">${e.time?e.time.substr(0,5)+' ':''} ${e.title}</div>`).join('')}
+      ${dayEvents.length > 3 ? `<div style="font-size:0.62rem;color:var(--text3);">+${dayEvents.length-3} autres</div>` : ''}
+    </div>`;
+  }
+
+  const remaining = 42 - offset - daysInMonth;
+  for (let d = 1; d <= remaining; d++) {
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+
+  document.getElementById('cal-grid').innerHTML = html;
+  renderUpcoming();
+}
+
+function showDayEvents(dateStr) {
+  const dayEvents = events.filter(e => e.date === dateStr);
+  const d = new Date(dateStr + 'T12:00:00');
+  document.getElementById('day-modal-title').textContent = d.toLocaleDateString('fr-CA', {weekday:'long',day:'numeric',month:'long'});
+  const typeLabel = {rdv:'RDV Client',echeance:'Échéance',tache:'Tâche',notaire:'Notaire'};
+  const typeClass = {rdv:'badge-blue',echeance:'badge-red',tache:'badge-green',notaire:'badge-gold'};
+  if (!dayEvents.length) {
+    document.getElementById('day-events-list').innerHTML = `<p style="text-align:center;color:var(--text3);padding:20px 0;">Aucun événement ce jour</p>`;
+  } else {
+    document.getElementById('day-events-list').innerHTML = dayEvents.map(e => `
+      <div class="event-item">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span class="badge ${typeClass[e.type]||'badge-blue'}">${typeLabel[e.type]||e.type}</span>
+            <span style="font-weight:600;font-size:0.9rem;">${e.title}</span>
+          </div>
+          ${e.time?`<div style="font-size:0.78rem;color:var(--text3);">🕐 ${e.time} · ${e.duration} min</div>`:''}
+          ${e.notes?`<div style="font-size:0.78rem;color:var(--text3);margin-top:3px;">${e.notes}</div>`:''}
+        </div>
+        <button class="icon-btn danger" onclick="deleteEvent('${e.id}')">🗑</button>
+      </div>`).join('');
+  }
+  openModal('modal-day-events');
+}
+
+function renderUpcoming() {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const upcoming = events
+    .filter(e => new Date(e.date + 'T12:00:00') >= today)
+    .sort((a,b) => a.date.localeCompare(b.date))
+    .slice(0, 8);
+  const typeLabel = {rdv:'RDV',echeance:'Échéance',tache:'Tâche',notaire:'Notaire'};
+  const typeClass = {rdv:'badge-blue',echeance:'badge-red',tache:'badge-green',notaire:'badge-gold'};
+  const el = document.getElementById('upcoming-events');
+  if (!upcoming.length) {
+    el.innerHTML = `<p style="color:var(--text3);font-size:0.85rem;padding:12px 0;">Aucun événement à venir</p>`;
+    return;
+  }
+  el.innerHTML = upcoming.map(e => {
+    const d = new Date(e.date + 'T12:00:00');
+    return `<div class="event-item">
+      <div class="event-date-box">
+        <div class="day">${d.getDate()}</div>
+        <div class="month">${d.toLocaleString('fr-CA',{month:'short'})}</div>
+      </div>
+      <div class="event-info">
+        <div class="event-title">${e.title}</div>
+        <div class="event-meta"><span class="badge ${typeClass[e.type]||'badge-blue'}" style="font-size:0.65rem;padding:2px 7px;">${typeLabel[e.type]||e.type}</span> ${e.time?'· '+e.time:''}</div>
+      </div>
+      <button class="icon-btn danger" onclick="deleteEvent('${e.id}')">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════
+// CRM / CONTACTS
+// ════════════════════════════════════════════
+function addContact() {
+  const first = document.getElementById('ct-first').value.trim();
+  const last = document.getElementById('ct-last').value.trim();
+  if (!first && !last) { toast('Veuillez entrer un nom', 'error'); return; }
+  const contact = {
+    id: generateId(),
+    first, last,
+    type: document.getElementById('ct-type').value,
+    phone: document.getElementById('ct-phone').value,
+    email: document.getElementById('ct-email').value,
+    address: document.getElementById('ct-address').value,
+    source: document.getElementById('ct-source').value,
+    interest: document.getElementById('ct-interest').value,
+    budgetMin: document.getElementById('ct-budget-min').value,
+    budgetMax: document.getElementById('ct-budget-max').value,
+    notes: document.getElementById('ct-notes').value,
+    created: new Date().toISOString()
+  };
+  contacts.unshift(contact);
+  save();
+  closeModal('modal-add-contact');
+  clearForm(['ct-first','ct-last','ct-phone','ct-email','ct-address','ct-budget-min','ct-budget-max','ct-notes']);
+  renderContacts();
+  updateBadges();
+  toast('Contact ajouté !');
+}
+
+function deleteContact(id) {
+  if (!confirm('Supprimer ce contact ?')) return;
+  contacts = contacts.filter(c => c.id !== id);
+  save(); renderContacts(); updateBadges(); toast('Contact supprimé');
+}
+
+function filterContactType(type, btn) {
+  currentContactType = type;
+  document.querySelectorAll('#page-crm .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderContacts();
+}
+
+function filterContacts() { renderContacts(); }
+
+function renderContacts() {
+  const search = document.getElementById('crm-search')?.value?.toLowerCase() || '';
+  let filtered = contacts;
+  if (currentContactType !== 'tous') filtered = filtered.filter(c => c.type === currentContactType);
+  if (search) filtered = filtered.filter(c => `${c.first} ${c.last} ${c.email} ${c.phone}`.toLowerCase().includes(search));
+
+  const typeLabel = {client:'Client actif',ancien:'Ancien client',prospect:'Prospect',lead:'Lead'};
+  const typeClass = {client:'badge-green',ancien:'badge-blue',prospect:'badge-gold',lead:'badge-orange'};
+  const colors = ['#c9a84c','#4caf82','#5c8fe0','#9b7fe0','#e0905c','#e05c5c'];
+
+  const grid = document.getElementById('contacts-grid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text3);">Aucun contact trouvé</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map((c, i) => {
+    const initials = ((c.first[0]||'') + (c.last[0]||'')).toUpperCase() || '?';
+    const color = colors[i % colors.length];
+    return `<div class="contact-card" onclick="expandContact('${c.id}')">
+      <div class="contact-avatar" style="background:${color}22;color:${color};">${initials}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="contact-name">${c.first} ${c.last}</div>
+        <div class="contact-meta">${c.phone||c.email||'Pas de coordonnées'}</div>
+        <div class="contact-tags">
+          <span class="badge ${typeClass[c.type]||'badge-blue'}">${typeLabel[c.type]||c.type}</span>
+          ${c.interest?`<span class="badge badge-purple" style="font-size:0.68rem;">${c.interest}</span>`:''}
+        </div>
+      </div>
+      <button class="icon-btn danger" onclick="event.stopPropagation();deleteContact('${c.id}')">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+function expandContact(id) {
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  const typeLabel = {client:'Client actif',ancien:'Ancien client',prospect:'Prospect',lead:'Lead'};
+  const info = [
+    c.phone && `📞 ${c.phone}`,
+    c.email && `✉️ ${c.email}`,
+    c.address && `📍 ${c.address}`,
+    c.source && `Source: ${c.source}`,
+    (c.budgetMin || c.budgetMax) && `Budget: ${c.budgetMin?'$'+Number(c.budgetMin).toLocaleString('fr-CA'):''} – ${c.budgetMax?'$'+Number(c.budgetMax).toLocaleString('fr-CA'):''}`,
+    c.notes && `📝 ${c.notes}`
+  ].filter(Boolean);
+
+  const html = `<div style="padding:4px 0;font-size:0.85rem;line-height:2;color:var(--text2);">${info.map(i=>`<div>${i}</div>`).join('')}</div>`;
+  const modal = document.getElementById('modal-day-events');
+  document.getElementById('day-modal-title').textContent = `${c.first} ${c.last} — ${typeLabel[c.type]||c.type}`;
+  document.getElementById('day-events-list').innerHTML = html || '<p style="color:var(--text3);">Aucune info supplémentaire</p>';
+  openModal('modal-day-events');
+}
+
+// ════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════
+function renderDashboard() {
+  // Date
+  const now = new Date();
+  document.getElementById('dash-date').textContent = now.toLocaleDateString('fr-CA', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const name = document.getElementById('user-display-name').textContent.split(' ')[0];
+  document.getElementById('dash-name').textContent = name;
+
+  // Stats
+  const activeTx = transactions.filter(t => t.status !== 'complété').length;
+  const completedTx = transactions.filter(t => t.status === 'complété').length;
+  const totalComm = transactions.filter(t=>t.status==='complété').reduce((s,t) => s + (t.price*(t.commission/100)*0.5*0.70),0);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const upcomingCount = events.filter(e => new Date(e.date+'T12:00:00') >= today).length;
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card gold"><div class="stat-icon">📁</div><div class="stat-label">Dossiers actifs</div><div class="stat-value">${activeTx}</div><div class="stat-sub">${transactions.length} total</div></div>
+    <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-label">Complétées</div><div class="stat-value">${completedTx}</div><div class="stat-sub">transactions</div></div>
+    <div class="stat-card blue"><div class="stat-icon">📅</div><div class="stat-label">Événements</div><div class="stat-value">${upcomingCount}</div><div class="stat-sub">à venir</div></div>
+    <div class="stat-card purple"><div class="stat-icon">💰</div><div class="stat-label">Commissions gagnées</div><div class="stat-value" style="font-size:1.3rem;">${totalComm?'$'+Math.round(totalComm).toLocaleString('fr-CA'):'—'}</div><div class="stat-sub">transactions complétées</div></div>
+  `;
+
+  // Recent transactions
+  const recentTx = transactions.slice(0,4);
+  const statusLabel = {actif:'Actif',conditionnel:'Conditionnel',ferme:'Ferme',complété:'Complété'};
+  const statusClass = {actif:'badge-blue',conditionnel:'badge-orange',ferme:'badge-gold',complété:'badge-green'};
+  document.getElementById('dash-transactions').innerHTML = recentTx.length
+    ? recentTx.map(tx => `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:1.2rem;">🏠</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:600;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${tx.address}</div>
+          <div style="font-size:0.75rem;color:var(--text3);">${tx.clients||'—'}</div>
+        </div>
+        <span class="badge ${statusClass[tx.status]||'badge-blue'}" style="flex-shrink:0;">${statusLabel[tx.status]||tx.status}</span>
+      </div>`).join('')
+    : `<p style="color:var(--text3);text-align:center;padding:20px 0;font-size:0.85rem;">Aucune transaction — <span style="color:var(--accent);cursor:pointer;" onclick="openModal('modal-add-transaction')">Créer un dossier</span></p>`;
+
+  // Upcoming events
+  const upEv = events.filter(e => new Date(e.date+'T12:00:00') >= today).sort((a,b) => a.date.localeCompare(b.date)).slice(0,4);
+  const typeLabel = {rdv:'RDV',echeance:'Échéance',tache:'Tâche',notaire:'Notaire'};
+  const typeClass = {rdv:'badge-blue',echeance:'badge-red',tache:'badge-green',notaire:'badge-gold'};
+  document.getElementById('dash-events').innerHTML = upEv.length
+    ? upEv.map(e => {
+        const d = new Date(e.date+'T12:00:00');
+        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+          <div style="background:var(--surface2);border-radius:8px;padding:5px 9px;text-align:center;min-width:40px;">
+            <div style="font-weight:700;font-size:1rem;line-height:1;">${d.getDate()}</div>
+            <div style="font-size:0.6rem;color:var(--text3);text-transform:uppercase;">${d.toLocaleString('fr-CA',{month:'short'})}</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:0.88rem;">${e.title}</div>
+            <div style="font-size:0.75rem;color:var(--text3);"><span class="badge ${typeClass[e.type]||'badge-blue'}" style="font-size:0.65rem;">${typeLabel[e.type]||e.type}</span> ${e.time?'· '+e.time:''}</div>
+          </div>
+        </div>`;
+      }).join('')
+    : `<p style="color:var(--text3);text-align:center;padding:20px 0;font-size:0.85rem;">Aucun événement — <span style="color:var(--accent);cursor:pointer;" onclick="openModal('modal-add-event')">Ajouter</span></p>`;
+}
+
+// ════════════════════════════════════════════
+// CALCULATOR
+// ════════════════════════════════════════════
+function calcCommission() {
+  const price = parseFloat(document.getElementById('calc-price')?.value) || 0;
+  const rate = parseFloat(document.getElementById('calc-rate')?.value) || 5;
+  const split = parseFloat(document.getElementById('calc-split')?.value) || 70;
+  const coop = parseFloat(document.getElementById('calc-coop')?.value) || 50;
+  const marketing = parseFloat(document.getElementById('calc-marketing')?.value) || 0;
+  const expenses = parseFloat(document.getElementById('calc-expenses')?.value) || 0;
+  const taxRate = parseFloat(document.getElementById('calc-tax')?.value) || 0;
+  const yearly = parseInt(document.getElementById('calc-yearly')?.value) || 15;
+
+  const commTotal = price * (rate / 100);
+  const coopShare = coop / 100;
+  const courtierShare = commTotal * coopShare;
+  const agenceNet = courtierShare * (split / 100);
+  const taxes = taxRate > 0 ? commTotal * taxRate : 0;
+  const totalExpenses = marketing + expenses;
+  const netRevenu = agenceNet - totalExpenses;
+
+  const area = document.getElementById('calc-result-area');
+  if (!area) return;
+  area.innerHTML = `
+    <div class="calc-result">
+      <div style="font-size:0.8rem;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.1em;">Revenu net estimé</div>
+      <div class="big-num">${netRevenu > 0 ? '$' + Math.round(netRevenu).toLocaleString('fr-CA') : '—'}</div>
+      <div class="sub">après dépenses</div>
+    </div>
+    <div class="card" style="margin-top:14px;padding:18px 20px;">
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:0.85rem;">
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--text3);">Commission totale</span><span style="font-weight:600;">$${Math.round(commTotal).toLocaleString('fr-CA')}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--text3);">Votre part (${100-coop}% coopération)</span><span>$${Math.round(courtierShare).toLocaleString('fr-CA')}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--text3);">Après partage agence (${split}%)</span><span>$${Math.round(agenceNet).toLocaleString('fr-CA')}</span></div>
+        ${taxRate > 0 ? `<div style="display:flex;justify-content:space-between;"><span style="color:var(--text3);">Taxes perçues (remises)</span><span style="color:var(--text3);">+$${Math.round(taxes).toLocaleString('fr-CA')}</span></div>` : ''}
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--red);">Dépenses totales</span><span style="color:var(--red);">-$${Math.round(totalExpenses).toLocaleString('fr-CA')}</span></div>
+        <div style="height:1px;background:var(--border);"></div>
+        <div style="display:flex;justify-content:space-between;font-weight:700;"><span>Revenu net</span><span style="color:var(--accent);">$${Math.round(netRevenu).toLocaleString('fr-CA')}</span></div>
+      </div>
+    </div>`;
+
+  // Yearly projection
+  const yp = document.getElementById('yearly-projection');
+  if (yp && netRevenu > 0) {
+    const annuel = netRevenu * yearly;
+    yp.innerHTML = `
+      <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:12px;">
+        <span style="color:var(--text3);">${yearly} transactions × $${Math.round(netRevenu).toLocaleString('fr-CA')}</span>
+        <span style="font-weight:700;color:var(--accent);">$${Math.round(annuel).toLocaleString('fr-CA')}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100, (annuel/200000)*100)}%"></div></div>
+      <div style="font-size:0.72rem;color:var(--text3);margin-top:6px;">Objectif 200 000 $/an : ${Math.round((annuel/200000)*100)}%</div>`;
+  }
+}
+
+// ════════════════════════════════════════════
+// PDF ANALYZER
+// ════════════════════════════════════════════
+function handlePdfUpload(event) {
+  pdfFile = event.target.files[0];
+  if (!pdfFile) return;
+  document.getElementById('pdf-filename').textContent = pdfFile.name;
+  document.getElementById('pdf-size').textContent = (pdfFile.size / 1024).toFixed(1) + ' KB';
+  document.getElementById('pdf-info').style.display = 'block';
+
+  const reader = new FileReader();
+  reader.onload = (e) => { pdfBase64 = e.target.result.split(',')[1]; };
+  reader.readAsDataURL(pdfFile);
+}
+
+async function analyzePdf() {
+  if (!pdfFile || !pdfBase64) return;
+  const output = document.getElementById('ai-output');
+  const typing = document.getElementById('ai-typing');
+  const resultContent = document.getElementById('ai-result-content');
+
+  output.style.display = 'block';
+  typing.style.display = 'flex';
+  resultContent.innerHTML = '';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'document',
+              source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 }
+            },
+            {
+              type: 'text',
+              text: `Analyse ce formulaire immobilier québécois (OACIQ) et fournis un résumé structuré en français avec les sections suivantes (utilise des emojis pour chaque section) :
+                
+🏠 **Type de formulaire** (PA / CP / MO / AG / autre)
+👥 **Parties impliquées** (acheteur, vendeur, courtiers)
+💰 **Prix et conditions financières**
+📅 **Dates importantes** (signature, conditions, notaire)
+⚠️ **Conditions et obligations spéciales**
+📋 **Travaux ou engagements du vendeur** (si applicable)
+✅ **Points d'attention** pour le courtier
+
+Sois concis mais complet. Format clair en markdown.`
+            }
+          ]
+        }]
+      })
+    });
+
+    typing.style.display = 'none';
+    const data = await response.json();
+    if (data.content && data.content[0]) {
+      const text = data.content[0].text;
+      resultContent.innerHTML = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/^## (.*)/gm, '<h4 style="color:var(--accent);margin:12px 0 6px;">$1</h4>')
+        .replace(/^# (.*)/gm, '<h3 style="color:var(--accent);margin:12px 0 8px;">$1</h3>')
+        .replace(/\n/g, '<br>');
+    } else {
+      resultContent.innerHTML = '<span style="color:var(--red);">Erreur lors de l\'analyse. Veuillez réessayer.</span>';
+    }
+  } catch (err) {
+    typing.style.display = 'none';
+    resultContent.innerHTML = `<span style="color:var(--red);">Erreur: ${err.message}</span>`;
+  }
+}
+
+// ════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════
+function clearForm(ids) { ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; }); }
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('fr-CA', {day:'numeric',month:'short',year:'numeric'});
+}
+
+function updateBadges() {
+  document.getElementById('tx-badge').textContent = transactions.filter(t => t.status !== 'complété').length;
+  document.getElementById('crm-badge').textContent = contacts.length;
+}
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Set today as default date in event form
+  const today = new Date().toISOString().split('T')[0];
+  if (document.getElementById('ev-date')) document.getElementById('ev-date').value = today;
+  if (document.getElementById('tx-notaire')) document.getElementById('tx-notaire').value = today;
+
+  renderDashboard();
+  updateBadges();
+  calcCommission();
+});
+</script>
+</body>
+</html>
